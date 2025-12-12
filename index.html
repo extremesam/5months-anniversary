@@ -1,354 +1,576 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Galaxy Love Portal — For Happiness</title>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg1:#01021a; /* deep space */
-      --bg2:#0b1026;
-      --accent: #9be3ff;
-      --pink: #ff8fb2;
-      --gold: #ffd27f;
-      --glass: rgba(255,255,255,0.04);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
-    body{background: radial-gradient(ellipse at 10% 10%, rgba(155,227,255,0.03), transparent 10%), linear-gradient(180deg,var(--bg1),var(--bg2));color:#e8f7ff;overflow-x:hidden}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Galaxy Love Portal — For Happiness</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg1: #01021a;
+            /* deep space */
+            --bg2: #0b1026;
+            --accent: #9be3ff;
+            --pink: #ff8fb2;
+            --gold: #ffd27f;
+            --glass: rgba(255, 255, 255, 0.04);
+        }
 
-    /* canvas starfield fills viewport */
-    canvas#stars{position:fixed;inset:0;z-index:0;display:block}
+        * {
+            box-sizing: border-box
+        }
 
-    /* main container */
-    .portal{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: Montserrat, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial
+        }
 
-    .card{
-      position:relative;z-index:4;max-width:960px;width:100%;backdrop-filter:blur(6px);
-      background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid rgba(155,227,255,0.06);
-      border-radius:18px;padding:32px;box-shadow:0 10px 60px rgba(0,0,0,0.6)
-    }
+        body {
+            background: radial-gradient(ellipse at 10% 10%, rgba(155, 227, 255, 0.03), transparent 10%), linear-gradient(180deg, var(--bg1), var(--bg2));
+            color: #e8f7ff;
+            overflow-x: hidden
+        }
 
-    .title{
-      font-family:'Great Vibes',cursive;font-size:clamp(36px,8vw,72px);text-align:center;color:var(--accent);text-shadow:0 8px 40px rgba(155,227,255,0.06);
-    }
+        /* canvas starfield fills viewport */
+        canvas#stars {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            display: block
+        }
 
-    .subtitle{font-size:clamp(14px,2.6vw,18px);text-align:center;margin-top:6px;color:#cfeeff;opacity:0.9}
+        /* main container */
+        .portal {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px
+        }
 
-    /* constellation strip */
-    .constellation{
-      margin-top:28px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap
-    }
-    .starNode{position:relative;padding:14px 18px;border-radius:10px;cursor:pointer;transition:transform .25s ease, box-shadow .25s ease}
-    .starNode:hover{transform:translateY(-8px);box-shadow:0 12px 40px rgba(155,227,255,0.08)}
-    .starNode .dot{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff, var(--accent));box-shadow:0 0 18px rgba(155,227,255,0.8)}
-    .starNode .label{font-size:14px;margin-top:8px;color:#dff8ff;text-align:center}
+        .card {
+            position: relative;
+            z-index: 4;
+            max-width: 960px;
+            width: 100%;
+            backdrop-filter: blur(6px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            border: 1px solid rgba(155, 227, 255, 0.06);
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: 0 10px 60px rgba(0, 0, 0, 0.6)
+        }
 
-    /* message bubble */
-    .bubble{position:fixed;z-index:12;left:50%;top:50%;transform:translate(-50%,-50%) scale(0.96);min-width:280px;max-width:680px;padding:22px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.05);box-shadow:0 30px 80px rgba(2,6,23,0.6);display:none}
-    .bubble.show{display:block;animation:pop .35s cubic-bezier(.2,.9,.3,1)}
-    @keyframes pop{from{transform:translate(-50%,-50%) scale(.86);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
-    .bubble h3{margin:0 0 8px 0;color:var(--gold);font-size:18px}
-    .bubble p{margin:0;color:#e7f8ff;line-height:1.6}
-    .bubble .close{position:absolute;right:10px;top:8px;opacity:.8;cursor:pointer}
+        .title {
+            font-family: 'Great Vibes', cursive;
+            font-size: clamp(36px, 8vw, 72px);
+            text-align: center;
+            color: var(--accent);
+            text-shadow: 0 8px 40px rgba(155, 227, 255, 0.06);
+        }
 
-    /* nebula heart */
-    .heartNebula{width:120px;height:120px;border-radius:50%;margin:18px auto 0;filter:blur(14px);mix-blend-mode:screen;opacity:.9}
-    .heartNebula svg{width:100%;height:100%;display:block}
+        .subtitle {
+            font-size: clamp(14px, 2.6vw, 18px);
+            text-align: center;
+            margin-top: 6px;
+            color: #cfeeff;
+            opacity: 0.9
+        }
 
-    /* timeline star-map */
-    .map{margin-top:32px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));display:flex;gap:12px;flex-direction:column}
-    .map .row{display:flex;gap:12px;align-items:center}
-    .map .point{flex:0 0 160px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;border:1px solid rgba(155,227,255,0.03)}
-    .map .point h4{margin:0;color:var(--accent)}
-    .map .point p{margin:6px 0 0;color:#dff8ff;font-size:13px}
+        /* constellation strip */
+        .constellation {
+            margin-top: 28px;
+            padding: 18px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap
+        }
 
-    /* footer */
-    .footer{margin-top:20px;text-align:center;font-size:13px;color:#9fdff7;opacity:.9}
+        .starNode {
+            position: relative;
+            padding: 14px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform .25s ease, box-shadow .25s ease
+        }
 
-    /* controls */
-    .controls{position:fixed;right:18px;bottom:18px;z-index:20;display:flex;flex-direction:column;gap:10px}
-    .btn{background:linear-gradient(135deg,var(--accent),var(--pink));border:none;padding:12px;border-radius:999px;cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,0.5);font-weight:600}
-    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#dff8ff}
+        .starNode:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(155, 227, 255, 0.08)
+        }
 
-    /* small screen */
-    @media (max-width:640px){.card{padding:20px}.title{font-size:34px}}
+        .starNode .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff, var(--accent));
+            box-shadow: 0 0 18px rgba(155, 227, 255, 0.8)
+        }
 
-  </style>
+        .starNode .label {
+            font-size: 14px;
+            margin-top: 8px;
+            color: #dff8ff;
+            text-align: center
+        }
+
+        /* message bubble */
+        .bubble {
+            position: fixed;
+            z-index: 12;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.96);
+            min-width: 280px;
+            max-width: 680px;
+            padding: 22px;
+            border-radius: 14px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 30px 80px rgba(2, 6, 23, 0.6);
+            display: none
+        }
+
+        .bubble.show {
+            display: block;
+            animation: pop .35s cubic-bezier(.2, .9, .3, 1)
+        }
+
+        @keyframes pop {
+            from {
+                transform: translate(-50%, -50%) scale(.86);
+                opacity: 0
+            }
+
+            to {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1
+            }
+        }
+
+        .bubble h3 {
+            margin: 0 0 8px 0;
+            color: var(--gold);
+            font-size: 18px
+        }
+
+        .bubble p {
+            margin: 0;
+            color: #e7f8ff;
+            line-height: 1.6
+        }
+
+        .bubble .close {
+            position: absolute;
+            right: 10px;
+            top: 8px;
+            opacity: .8;
+            cursor: pointer
+        }
+
+        /* nebula heart */
+        .heartNebula {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 18px auto 0;
+            filter: blur(14px);
+            mix-blend-mode: screen;
+            opacity: .9
+        }
+
+        .heartNebula svg {
+            width: 100%;
+            height: 100%;
+            display: block
+        }
+
+        /* timeline star-map */
+        .map {
+            margin-top: 32px;
+            padding: 18px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.02));
+            display: flex;
+            gap: 12px;
+            flex-direction: column
+        }
+
+        .map .row {
+            display: flex;
+            gap: 12px;
+            align-items: center
+        }
+
+        .map .point {
+            flex: 0 0 160px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(155, 227, 255, 0.03)
+        }
+
+        .map .point h4 {
+            margin: 0;
+            color: var(--accent)
+        }
+
+        .map .point p {
+            margin: 6px 0 0;
+            color: #dff8ff;
+            font-size: 13px
+        }
+
+        /* footer */
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #9fdff7;
+            opacity: .9
+        }
+
+        /* controls */
+        .controls {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent), var(--pink));
+            border: none;
+            padding: 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            font-weight: 600
+        }
+
+        .ghost {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #dff8ff
+        }
+
+        /* small screen */
+        @media (max-width:640px) {
+            .card {
+                padding: 20px
+            }
+
+            .title {
+                font-size: 34px
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <canvas id="stars"></canvas>
+    <canvas id="stars"></canvas>
 
-  <main class="portal" aria-live="polite">
-    <div class="card" role="article">
-      <div style="display:flex;align-items:center;gap:18px;justify-content:center;flex-direction:column">
-        <div class="title">Galaxy Love Portal</div>
-        <div class="subtitle">Oluwaseun → Happiness — 5 months of orbiting each other</div>
+    <main class="portal" aria-live="polite">
+        <div class="card" role="article">
+            <div style="display:flex;align-items:center;gap:18px;justify-content:center;flex-direction:column">
+                <div class="title">Galaxy Love Portal</div>
+                <div class="subtitle">Oluwaseun → Happiness — 5 months of orbiting each other</div>
 
-        <div class="constellation" id="constellation">
-          <!-- interactive nodes added by JS -->
+                <div class="constellation" id="constellation">
+                    <!-- interactive nodes added by JS -->
+                </div>
+
+                <div class="heartNebula" aria-hidden="true">
+                    <!-- small SVG heart-shaped nebula glow -->
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                            <radialGradient id="g1" cx="30%" cy="30%">
+                                <stop offset="0%" stop-color="#ff9ccf" stop-opacity="0.95" />
+                                <stop offset="60%" stop-color="#ff9ccf" stop-opacity="0.2" />
+                                <stop offset="100%" stop-color="#7adcff" stop-opacity="0" />
+                            </radialGradient>
+                        </defs>
+                        <g transform="translate(50,40) scale(0.9)">
+                            <path
+                                d="M0,-22 C-18,-40 -45,-18 -30,6 C-20,22 0,34 0,34 C0,34 20,22 30,6 C45,-18 18,-40 0,-22Z"
+                                fill="url(#g1)" />
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="map" aria-hidden="false">
+                    <div class="row">
+                        <div class="point">
+                            <h4>The Meeting</h4>
+                            <p>The day our stars crossed — the start of this beautiful orbit.</p>
+                        </div>
+                        <div class="point">
+                            <h4>First Date</h4>
+                            <p>Nervous smiles, timeless conversation.</p>
+                        </div>
+                        <div class="point">
+                            <h4>First Kiss</h4>
+                            <p>A quiet universe in a single breath.</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="point">
+                            <h4>Little Adventures</h4>
+                            <p>Every small memory that made us us.</p>
+                        </div>
+                        <div class="point">
+                            <h4>5 Months</h4>
+                            <p>Today — and many more orbits to come.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="margin-top:20px;text-align:center">
+                <button class="btn" id="openLetter">Open My Cosmic Letter</button>
+            </div>
+
         </div>
 
-        <div class="heartNebula" aria-hidden="true">
-          <!-- small SVG heart-shaped nebula glow -->
-          <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              <radialGradient id="g1" cx="30%" cy="30%">
-                <stop offset="0%" stop-color="#ff9ccf" stop-opacity="0.95" />
-                <stop offset="60%" stop-color="#ff9ccf" stop-opacity="0.2" />
-                <stop offset="100%" stop-color="#7adcff" stop-opacity="0" />
-              </radialGradient>
-            </defs>
-            <g transform="translate(50,40) scale(0.9)">
-              <path d="M0,-22 C-18,-40 -45,-18 -30,6 C-20,22 0,34 0,34 C0,34 20,22 30,6 C45,-18 18,-40 0,-22Z" fill="url(#g1)" />
-            </g>
-          </svg>
+        <div class="bubble" id="letterBubble" role="dialog" aria-modal="true" aria-label="Cosmic Love Letter">
+            <div class="close" id="closeBubble" title="close">✖</div>
+            <h3>To My Star — Happiness,</h3>
+            <p id="letterText">In this vast universe I searched and found you — a light that makes the dark kind and the
+                quiet loud with meaning. Five months ago our paths aligned and ever since every little thing has felt
+                brighter. You are the constellation I trace when I lose my way. I promise to orbit you with patience,
+                laughter, and steady love. — Oluwaseun</p>
         </div>
 
-        <div class="map" aria-hidden="false">
-          <div class="row">
-            <div class="point"><h4>The Meeting</h4><p>The day our stars crossed — the start of this beautiful orbit.</p></div>
-            <div class="point"><h4>First Date</h4><p>Nervous smiles, timeless conversation.</p></div>
-            <div class="point"><h4>First Kiss</h4><p>A quiet universe in a single breath.</p></div>
-          </div>
-          <div class="row">
-            <div class="point"><h4>Little Adventures</h4><p>Every small memory that made us us.</p></div>
-            <div class="point"><h4>5 Months</h4><p>Today — and many more orbits to come.</p></div>
-          </div>
-        </div>
+        <div class="footer">Tip: Click the glowing stars / nodes to reveal tiny cosmic notes ✨</div>
+    </main>
 
-      </div>
-
-      <div style="margin-top:20px;text-align:center">
-        <button class="btn" id="openLetter">Open My Cosmic Letter</button>
-      </div>
-
+    <div class="controls" aria-hidden="false">
+        <button class="btn" id="toggleMusic">Play Ambient</button>
+        <button class="btn ghost" id="toggleComets">Toggle Comets</button>
     </div>
 
-    <div class="bubble" id="letterBubble" role="dialog" aria-modal="true" aria-label="Cosmic Love Letter">
-      <div class="close" id="closeBubble" title="close">✖</div>
-      <h3>To My Star — Happiness,</h3>
-      <p id="letterText">In this vast universe I searched and found you — a light that makes the dark kind and the quiet loud with meaning. Five months ago our paths aligned and ever since every little thing has felt brighter. You are the constellation I trace when I lose my way. I promise to orbit you with patience, laughter, and steady love. — Oluwaseun</p>
-    </div>
+    <script>
+        /*********************
+           Starfield Canvas
+        *********************/
+        const canvas = document.getElementById('stars');
+        const ctx = canvas.getContext('2d');
+        let W = canvas.width = innerWidth;
+        let H = canvas.height = innerHeight;
 
-    <div class="footer"> ✨</div>
-  </main>
+        const numStars = Math.round((W * H) / 6000);
+        const stars = [];
+        const comets = [];
+        let cometsEnabled = true;
 
-  <!-- <div class="controls" aria-hidden="false">
-    <button class="btn" id="toggleMusic">Play Ambient</button>
-    <button class="btn ghost" id="toggleComets">Toggle Comets</button>
-  </div> -->
+        function rand(min, max) { return Math.random() * (max - min) + min }
 
-  <script>
-    /*********************
-       Starfield Canvas
-    *********************/
-    const canvas = document.getElementById('stars');
-    const ctx = canvas.getContext('2d');
-    let W = canvas.width = innerWidth;
-    let H = canvas.height = innerHeight;
-
-    const numStars = Math.round((W*H)/6000);
-    const stars = [];
-    const comets = [];
-    let cometsEnabled = true;
-
-    function rand(min,max){return Math.random()*(max-min)+min}
-
-    function init(){
-      stars.length = 0;
-      for(let i=0;i<numStars;i++){
-        stars.push({x:rand(0,W),y:rand(0,H),z:rand(0.2,1),r:rand(0.3,1.8),alpha:rand(0.2,1),pulse:rand(0.002,0.012)});
-      }
-      // initial comets
-      for(let i=0;i<2;i++) spawnComet(true);
-    }
-
-    function spawnComet(force){
-      if(!cometsEnabled && !force) return;
-      if(Math.random()<0.7 && !force) return;
-      const size = rand(120,260);
-      comets.push({x:rand(-200,W+200),y:rand(-200,H/2),vx:rand(-2,-6),vy:rand(0,1.8),life:size,trail:[],ttl:rand(80,200)});
-    }
-
-    function draw(){
-      ctx.clearRect(0,0,W,H);
-      // subtle nebula gradient
-      const g = ctx.createLinearGradient(0,0,W,H);
-      g.addColorStop(0,'rgba(10,8,30,0.05)');g.addColorStop(1,'rgba(8,12,30,0.06)');
-      ctx.fillStyle = g;ctx.fillRect(0,0,W,H);
-
-      // stars
-      for(const s of stars){
-        s.alpha += Math.sin(performance.now()*s.pulse*0.001)*0.002;
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(255,255,255,${Math.min(Math.max(s.alpha,0.05),1)})`;
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-        ctx.fill();
-      }
-
-      // comets
-      for(let i=comets.length-1;i>=0;i--){
-        const c = comets[i];
-        c.trail.unshift({x:c.x,y:c.y});
-        if(c.trail.length>35) c.trail.pop();
-        c.x += c.vx; c.y += c.vy; c.life -= 1; c.ttl -= 1;
-        // draw trail
-        for(let j=0;j<c.trail.length;j++){
-          const p = c.trail[j];
-          const t = j/c.trail.length;
-          ctx.beginPath();
-          ctx.fillStyle = `rgba(180,240,255,${(1-t)*0.25})`;
-          ctx.arc(p.x - c.vx*j*0.6, p.y - c.vy*j*0.6, Math.max(0,(1-t)*4), 0, Math.PI*2);
-          ctx.fill();
+        function init() {
+            stars.length = 0;
+            for (let i = 0; i < numStars; i++) {
+                stars.push({ x: rand(0, W), y: rand(0, H), z: rand(0.2, 1), r: rand(0.3, 1.8), alpha: rand(0.2, 1), pulse: rand(0.002, 0.012) });
+            }
+            // initial comets
+            for (let i = 0; i < 2; i++) spawnComet(true);
         }
-        // head
-        ctx.beginPath();
-        ctx.fillStyle = 'rgba(255,255,255,0.95)';
-        ctx.arc(c.x, c.y, 3.6, 0, Math.PI*2);
-        ctx.fill();
-        if(c.ttl<=0 || c.y>H+200 || c.x<-400) comets.splice(i,1);
-      }
 
-      // occasional new comets
-      if(Math.random()<0.01) spawnComet(false);
-      requestAnimationFrame(draw);
-    }
-
-    addEventListener('resize', ()=>{W=canvas.width=innerWidth;H=canvas.height=innerHeight;init();});
-
-    init();draw();
-
-    /*********************
-      Constellation UI
-    *********************/
-    const nodes = [
-      {id:'H',label:'Happiness',note:'Your smile is my brightest constellation.'},
-      {id:'L',label:'Laugh',note:'Your laughter echoes in my chest like stars singing.'},
-      {id:'K',label:'Kindness',note:'Your kindness anchors me.'},
-      {id:'S',label:'Sunrise',note:'You are my favorite sunrise, every day.'},
-      {id:'F',label:'First Kiss',note:'I keep that moment as a soft light in my memory.'},
-      {id:'5',label:'5 Months',note:'Today we celebrate five beautiful moons together.'}
-    ];
-
-    const constellation = document.getElementById('constellation');
-    nodes.forEach((n,idx)=>{
-      const el = document.createElement('div');el.className='starNode';el.dataset.note=n.note;el.setAttribute('role','button');el.setAttribute('tabindex','0');
-      el.innerHTML = `<div class='dot' aria-hidden='true'></div><div class='label'><strong>${n.id}</strong><div style='font-size:12px;margin-top:6px;opacity:.95'>${n.label}</div></div>`;
-      // position jitter
-      el.style.transform = `translateY(${(idx%2? -6:6)+Math.round(Math.random()*8)}px)`;
-      el.addEventListener('click', ()=>showNote(n.label,n.note));
-      el.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') showNote(n.label,n.note); });
-      constellation.appendChild(el);
-    });
-
-    function showNote(title,txt){
-      const b = document.getElementById('letterBubble');
-      b.querySelector('h3').textContent = title === '5 Months' ? (`5 Months — My Star`) : (`To ${title}`);
-      b.querySelector('p').textContent = txt;
-      b.classList.add('show');
-    }
-
-    document.getElementById('openLetter').addEventListener('click', ()=>{
-      const b = document.getElementById('letterBubble');
-      b.querySelector('h3').textContent = `My Dearest Happiness —`; 
-      b.querySelector('p').textContent = `In this endless sky I found your light. Five months orbiting you has taught me the quiet power of steady love. You are my compass, my color in the dark, and my favorite tomorrow. I love you — Oluwaseun.`;
-      b.classList.add('show');
-    });
-
-    document.getElementById('closeBubble').addEventListener('click', ()=>document.getElementById('letterBubble').classList.remove('show'));
-
-    // close on outside click
-    document.addEventListener('click',(e)=>{
-      const b = document.getElementById('letterBubble');
-      if(b.classList.contains('show')){
-        if(!b.contains(e.target) && !document.getElementById('openLetter').contains(e.target)) b.classList.remove('show');
-      }
-    });
-
-    /*********************
-      Gentle WebAudio Ambience
-    *********************/
-    let audioCtx,osc,gainNode,isPlaying=false;
-    const btn = document.getElementById('toggleMusic');
-    btn.addEventListener('click', ()=>{
-      if(!audioCtx){
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        osc = audioCtx.createOscillator();
-        gainNode = audioCtx.createGain();
-        // create two layered oscillators for warmth
-        osc.type = 'sine'; osc.frequency.value = 220; 
-        const osc2 = audioCtx.createOscillator(); osc2.type='sine'; osc2.frequency.value=330; 
-        const g2 = audioCtx.createGain(); g2.gain.value=0.0008;
-        // slow LFO for gentle wobble
-        const lfo = audioCtx.createOscillator(); lfo.type='sine'; lfo.frequency.value=0.05; 
-        const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 10;
-        lfo.connect(lfoGain);
-        lfoGain.connect(osc.frequency);
-        lfo.start();
-
-        gainNode.gain.value = 0.0004;
-        osc.connect(gainNode);
-        osc2.connect(g2); g2.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        osc.start(); osc2.start();
-        // gentle fade-in
-        gainNode.gain.linearRampToValueAtTime(0.0009, audioCtx.currentTime + 1.5);
-        isPlaying=true; btn.textContent='Pause Ambient';
-      } else {
-        if(isPlaying){
-          gainNode.gain.linearRampToValueAtTime(0.00001, audioCtx.currentTime + 1.2);
-          isPlaying=false; btn.textContent='Play Ambient';
-        } else {
-          gainNode.gain.linearRampToValueAtTime(0.0009, audioCtx.currentTime + 1.2);
-          isPlaying=true; btn.textContent='Pause Ambient';
+        function spawnComet(force) {
+            if (!cometsEnabled && !force) return;
+            if (Math.random() < 0.7 && !force) return;
+            const size = rand(120, 260);
+            comets.push({ x: rand(-200, W + 200), y: rand(-200, H / 2), vx: rand(-2, -6), vy: rand(0, 1.8), life: size, trail: [], ttl: rand(80, 200) });
         }
-      }
-    });
 
-    /*********************
-      Comet toggle
-    *********************/
-    document.getElementById('toggleComets').addEventListener('click', ()=>{
-      cometsEnabled = !cometsEnabled; document.getElementById('toggleComets').textContent = cometsEnabled? 'Toggle Comets' : 'Comets Paused';
-      if(cometsEnabled) spawnComet(true);
-    });
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+            // subtle nebula gradient
+            const g = ctx.createLinearGradient(0, 0, W, H);
+            g.addColorStop(0, 'rgba(10,8,30,0.05)'); g.addColorStop(1, 'rgba(8,12,30,0.06)');
+            ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 
-    // accessibility: reduce motion respect
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(prefersReduced){
-      // stop comets and subtle animations
-      cometsEnabled=false;
-      document.querySelectorAll('.starNode').forEach(n=>n.style.transform='none');
-    }
+            // stars
+            for (const s of stars) {
+                s.alpha += Math.sin(performance.now() * s.pulse * 0.001) * 0.002;
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(255,255,255,${Math.min(Math.max(s.alpha, 0.05), 1)})`;
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
 
-    // small confetti of tiny stars when celebrating 5 months
-    function celebrate(){
-      const frag = document.createDocumentFragment();
-      for(let i=0;i<80;i++){
-        const el = document.createElement('div');
-        el.style.position='fixed';el.style.left=rand(20,innerWidth-20)+'px';el.style.top=rand(20,innerHeight-120)+'px';el.style.width='4px';el.style.height='4px';el.style.borderRadius='50%';el.style.background = (Math.random()>0.5? '#ffd27f':'#ff8fb2');el.style.opacity=0.95;el.style.zIndex=30;el.style.pointerEvents='none';el.style.transform='scale(0)';el.style.transition='transform .9s ease, opacity 1s ease';
-        frag.appendChild(el);
-        document.body.appendChild(el);
-        requestAnimationFrame(()=>{ el.style.transform='scale(1)'; el.style.opacity='0'; });
-        setTimeout(()=>el.remove(),1100);
-      }
-    }
+            // comets
+            for (let i = comets.length - 1; i >= 0; i--) {
+                const c = comets[i];
+                c.trail.unshift({ x: c.x, y: c.y });
+                if (c.trail.length > 35) c.trail.pop();
+                c.x += c.vx; c.y += c.vy; c.life -= 1; c.ttl -= 1;
+                // draw trail
+                for (let j = 0; j < c.trail.length; j++) {
+                    const p = c.trail[j];
+                    const t = j / c.trail.length;
+                    ctx.beginPath();
+                    ctx.fillStyle = `rgba(180,240,255,${(1 - t) * 0.25})`;
+                    ctx.arc(p.x - c.vx * j * 0.6, p.y - c.vy * j * 0.6, Math.max(0, (1 - t) * 4), 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                // head
+                ctx.beginPath();
+                ctx.fillStyle = 'rgba(255,255,255,0.95)';
+                ctx.arc(c.x, c.y, 3.6, 0, Math.PI * 2);
+                ctx.fill();
+                if (c.ttl <= 0 || c.y > H + 200 || c.x < -400) comets.splice(i, 1);
+            }
 
-    // celebrate on load (small)
-    setTimeout(()=>{celebrate()},800);
+            // occasional new comets
+            if (Math.random() < 0.01) spawnComet(false);
+            requestAnimationFrame(draw);
+        }
 
-    // keyboard: open letter with L
-    document.addEventListener('keydown',(e)=>{ if(e.key.toLowerCase()==='l') document.getElementById('openLetter').click(); });
+        addEventListener('resize', () => { W = canvas.width = innerWidth; H = canvas.height = innerHeight; init(); });
 
-    // small announcement for screen readers
-    setTimeout(()=>{
-      const sr = document.createElement('div'); sr.setAttribute('aria-hidden','false'); sr.style.position='absolute'; sr.style.left='-9999px'; sr.innerText='Happy five months to you and Happiness. Open the cosmic letter by pressing the button.'; document.body.appendChild(sr);
-    },1200);
+        init(); draw();
 
-  </script>
+        /*********************
+          Constellation UI
+        *********************/
+        const nodes = [
+            { id: 'H', label: 'Happiness', note: 'Your smile is my brightest constellation.' },
+            { id: 'L', label: 'Laugh', note: 'Your laughter echoes in my chest like stars singing.' },
+            { id: 'K', label: 'Kindness', note: 'Your kindness anchors me.' },
+            { id: 'S', label: 'Sunrise', note: 'You are my favorite sunrise, every day.' },
+            { id: 'F', label: 'First Kiss', note: 'I keep that moment as a soft light in my memory.' },
+            { id: '5', label: '5 Months', note: 'Today we celebrate five beautiful moons together.' }
+        ];
+
+        const constellation = document.getElementById('constellation');
+        nodes.forEach((n, idx) => {
+            const el = document.createElement('div'); el.className = 'starNode'; el.dataset.note = n.note; el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0');
+            el.innerHTML = `<div class='dot' aria-hidden='true'></div><div class='label'><strong>${n.id}</strong><div style='font-size:12px;margin-top:6px;opacity:.95'>${n.label}</div></div>`;
+            // position jitter
+            el.style.transform = `translateY(${(idx % 2 ? -6 : 6) + Math.round(Math.random() * 8)}px)`;
+            el.addEventListener('click', (e) => { e.stopPropagation(); showNote(n.label, n.note); });
+            el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') showNote(n.label, n.note); });
+            constellation.appendChild(el);
+        });
+
+        function showNote(title, txt) {
+            const b = document.getElementById('letterBubble');
+            b.querySelector('h3').textContent = title === '5 Months' ? (`5 Months — My Star`) : (`To ${title}`);
+            b.querySelector('p').textContent = txt;
+            b.classList.add('show');
+        }
+
+        document.getElementById('openLetter').addEventListener('click', () => {
+            const b = document.getElementById('letterBubble');
+            b.querySelector('h3').textContent = `My Dearest Happiness —`;
+            b.querySelector('p').textContent = `In this endless sky I found your light. Five months orbiting you has taught me the quiet power of steady love. You are my compass, my color in the dark, and my favorite tomorrow. I love you — Oluwaseun.`;
+            b.classList.add('show');
+        });
+
+        document.getElementById('closeBubble').addEventListener('click', () => document.getElementById('letterBubble').classList.remove('show'));
+
+        // close on outside click
+        document.addEventListener('click', (e) => {
+            const b = document.getElementById('letterBubble');
+            if (b.classList.contains('show')) {
+                if (!b.contains(e.target) && !document.getElementById('openLetter').contains(e.target)) b.classList.remove('show');
+            }
+        });
+
+        /*********************
+          Gentle WebAudio Ambience
+        *********************/
+        let audioCtx, osc, gainNode, isPlaying = false;
+        const btn = document.getElementById('toggleMusic');
+        btn.addEventListener('click', () => {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                osc = audioCtx.createOscillator();
+                gainNode = audioCtx.createGain();
+                // create two layered oscillators for warmth
+                osc.type = 'sine'; osc.frequency.value = 220;
+                const osc2 = audioCtx.createOscillator(); osc2.type = 'sine'; osc2.frequency.value = 330;
+                const g2 = audioCtx.createGain(); g2.gain.value = 0.0008;
+                // slow LFO for gentle wobble
+                const lfo = audioCtx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.05;
+                const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 10;
+                lfo.connect(lfoGain);
+                lfoGain.connect(osc.frequency);
+                lfo.start();
+
+                gainNode.gain.value = 0.0004;
+                osc.connect(gainNode);
+                osc2.connect(g2); g2.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                osc.start(); osc2.start();
+                // gentle fade-in
+                gainNode.gain.linearRampToValueAtTime(0.0009, audioCtx.currentTime + 1.5);
+                isPlaying = true; btn.textContent = 'Pause Ambient';
+            } else {
+                if (isPlaying) {
+                    gainNode.gain.linearRampToValueAtTime(0.00001, audioCtx.currentTime + 1.2);
+                    isPlaying = false; btn.textContent = 'Play Ambient';
+                } else {
+                    gainNode.gain.linearRampToValueAtTime(0.0009, audioCtx.currentTime + 1.2);
+                    isPlaying = true; btn.textContent = 'Pause Ambient';
+                }
+            }
+        });
+
+        /*********************
+          Comet toggle
+        *********************/
+        document.getElementById('toggleComets').addEventListener('click', () => {
+            cometsEnabled = !cometsEnabled; document.getElementById('toggleComets').textContent = cometsEnabled ? 'Toggle Comets' : 'Comets Paused';
+            if (cometsEnabled) spawnComet(true);
+        });
+
+        // accessibility: reduce motion respect
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReduced) {
+            // stop comets and subtle animations
+            cometsEnabled = false;
+            document.querySelectorAll('.starNode').forEach(n => n.style.transform = 'none');
+        }
+
+        // small confetti of tiny stars when celebrating 5 months
+        function celebrate() {
+            const frag = document.createDocumentFragment();
+            for (let i = 0; i < 80; i++) {
+                const el = document.createElement('div');
+                el.style.position = 'fixed'; el.style.left = rand(20, innerWidth - 20) + 'px'; el.style.top = rand(20, innerHeight - 120) + 'px'; el.style.width = '4px'; el.style.height = '4px'; el.style.borderRadius = '50%'; el.style.background = (Math.random() > 0.5 ? '#ffd27f' : '#ff8fb2'); el.style.opacity = 0.95; el.style.zIndex = 30; el.style.pointerEvents = 'none'; el.style.transform = 'scale(0)'; el.style.transition = 'transform .9s ease, opacity 1s ease';
+                frag.appendChild(el);
+                document.body.appendChild(el);
+                requestAnimationFrame(() => { el.style.transform = 'scale(1)'; el.style.opacity = '0'; });
+                setTimeout(() => el.remove(), 1100);
+            }
+        }
+
+        // celebrate on load (small)
+        setTimeout(() => { celebrate() }, 800);
+
+        // keyboard: open letter with L
+        document.addEventListener('keydown', (e) => { if (e.key.toLowerCase() === 'l') document.getElementById('openLetter').click(); });
+
+        // small announcement for screen readers
+        setTimeout(() => {
+            const sr = document.createElement('div'); sr.setAttribute('aria-hidden', 'false'); sr.style.position = 'absolute'; sr.style.left = '-9999px'; sr.innerText = 'Happy five months to you and Happiness. Open the cosmic letter by pressing the button.'; document.body.appendChild(sr);
+        }, 1200);
+
+    </script>
 </body>
+
 </html>
